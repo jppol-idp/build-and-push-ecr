@@ -54,6 +54,12 @@ runs:
       uses: aws-actions/amazon-ecr-login@v2
       with:
         registries: ${{ inputs.ecr_account_id }}
+    - name: Create AWS ECR repository
+      uses: uspacy/aws-ecr-action@v1
+      with:
+        repositoryName: ${{ inputs.namespace }}/${{ inputs.name }}
+        scanOnPush: true
+        imageTagMutability: UNMUTABLE
     - uses: int128/create-ecr-repository-action@v1
       id: ecr
       with:
