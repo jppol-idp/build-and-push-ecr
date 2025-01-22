@@ -35,6 +35,7 @@ inputs:
     default: true
   run_push:
     description: If set to false, nothing is pushed. If you need to tag your image correct given inputs, you can run this action but both run_build and run_push set to false and use the fully_qualified_name output to tag before using action again.
+    default: true
 outputs:
   fully_qualified_name:
     value: ${{ steps.full_image_name.outputs.name }}
@@ -61,10 +62,6 @@ runs:
         repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
         scanOnPush: true
         imageTagMutability: INMUTABLE
-    - uses: int128/create-ecr-repository-action@v1
-      id: ecr
-      with:
-        repository: ${{ inputs.namespace }}/${{ inputs.image_name }}
     - name: Create full image name
       id: full_image_name
       shell: bash
