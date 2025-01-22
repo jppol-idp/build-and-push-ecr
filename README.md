@@ -31,7 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Build and push
-        uses: jppol-idp/build-and-push-ecr@<<VERSION>>
+        uses: jppol-idp/build-and-push-ecr@v2
         with:
           image_name: mf-create-by-action
           namespace: idp
@@ -47,6 +47,44 @@ ensure that an image has been tagged as expected by another step in the workflow
 
 The full image name with registry referance and tag can be produced by running this 
 actions once with both pushing and building enabled and capturing the output `fully_qualified_name`.
+
+Example: 
+```yaml
+
+name: Custom build and action push
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build_and_push:
+    runs-on: ubuntu-24.04
+    permissions: write-all
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create tag
+        id: create_tag
+        uses: jppol-idp/build-and-push-ecr@v2
+        with:
+          image_name: testing-ecr-push
+          namespace: idp
+          image_tag: ${{ github.run_number }}
+          run_build: false
+          run_push: false
+      - name: Build
+        run: |
+          docker build . --build-arg DUMMY=FOO2 -t ${{ steps.create_tag.outputs.fully_qualified_name }}
+      - name: Push 
+        id: push
+        uses: jppol-idp/build-and-push-ecr@v2
+        with:
+          image_name: testing-ecr-push
+          namespace: idp
+          image_tag: ${{ github.run_number }}
+          run_build: false
+```
 
 # Other parameters
 |parameter |description | default |
