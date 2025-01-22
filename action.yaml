@@ -39,7 +39,7 @@ on:
         description: If set to false, nothing is pushed. If you need to tag your image correct given inputs, you can run this action but both run_build and run_push set to false and use the fully_qualified_name output to tag before using action again.
      output:
         fully_qualified_name:
-          value: 
+          value: ${{ steps.full_image_name.outputs.name }}
 
 runs:
   using: "composite"
