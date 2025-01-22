@@ -57,7 +57,7 @@ runs:
     - name: Create AWS ECR repository
       uses: uspacy/aws-ecr-action@v1
       with:
-        repositoryName: ${{ inputs.namespace }}/${{ inputs.name }}
+        repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
         scanOnPush: true
         imageTagMutability: UNMUTABLE
     - uses: int128/create-ecr-repository-action@v1
