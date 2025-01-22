@@ -1,45 +1,43 @@
 
 name: deploy-ecr
 run-name: Deploy ECR
-on:
-  workflow_call:
-    inputs:
-      image_name:
-        description: The image name. Will be appended to namespace.
-        required: true
-        type: string
-      image_tag:
-        description: A tag value to set
-        required: true
-        type: string
-      docker_folder:
-        description: When building the action will step into this folder and run a docker build command.
-        required: false 
-        default: .
-        type: string
-      namespace:
-        description: The namespace or prefix to use. Final image name will be a composite of this and the image name joined by a slash.
-        required: true
-        type: string
-      ecr_account_id:
-        description: The account id to push to. For internal use at jppol default value should be used.
-        required: false
-        type: string
-        default: '354918371398'
-      aws_region: 
-        description: For internal use at jppol default value should be used.
-        required: false
-        type: string
-        default: eu-west-1
-      run_build:
-        description: Set to false if you want to run the docker build your self. In this case the image must be tagged correctly as ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/NAMESPACE/IMAGE_NAME:IMAGE_TAG
-        type: boolean
-        default: true
-      run_push:
-        description: If set to false, nothing is pushed. If you need to tag your image correct given inputs, you can run this action but both run_build and run_push set to false and use the fully_qualified_name output to tag before using action again.
-     outputs:
-        fully_qualified_name:
-          value: ${{ steps.full_image_name.outputs.name }}
+inputs:
+  image_name:
+    description: The image name. Will be appended to namespace.
+    required: true
+    type: string
+  image_tag:
+    description: A tag value to set
+    required: true
+    type: string
+  docker_folder:
+    description: When building the action will step into this folder and run a docker build command.
+    required: false 
+    default: .
+    type: string
+  namespace:
+    description: The namespace or prefix to use. Final image name will be a composite of this and the image name joined by a slash.
+    required: true
+    type: string
+  ecr_account_id:
+    description: The account id to push to. For internal use at jppol default value should be used.
+    required: false
+    type: string
+    default: '354918371398'
+  aws_region: 
+    description: For internal use at jppol default value should be used.
+    required: false
+    type: string
+    default: eu-west-1
+  run_build:
+    description: Set to false if you want to run the docker build your self. In this case the image must be tagged correctly as ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/NAMESPACE/IMAGE_NAME:IMAGE_TAG
+    type: boolean
+    default: true
+  run_push:
+    description: If set to false, nothing is pushed. If you need to tag your image correct given inputs, you can run this action but both run_build and run_push set to false and use the fully_qualified_name output to tag before using action again.
+outputs:
+  fully_qualified_name:
+    value: ${{ steps.full_image_name.outputs.name }}
 
 runs:
   using: "composite"
