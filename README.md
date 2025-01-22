@@ -56,7 +56,7 @@ actions once with both pushing and building enabled and capturing the output `fu
 | docker\_folder | Use if Dockerfile is in other location than context root. Should be relative to context root. | `.` |
 | namespace | Prefixed to image name and concatenated with a slash | none |
 | ecr\_account\_id | The ECR account. Use default. | ------- |
-| aws\_region | Region for ECR. | eu-west-1 |
+| aws\_region | Region for ECR. | `eu-west-1` |
 | run\_build | When set to false, no docker build is run. | `true` |
 | run\_push | When true push to ECR is attempted. | `true` |
 

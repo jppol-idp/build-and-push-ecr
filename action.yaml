@@ -56,7 +56,7 @@ runs:
       with:
         registries: ${{ inputs.ecr_account_id }}
     - name: Create AWS ECR repository
-      if: ${{ inputs.run_push }}
+      if: ${{ inputs.run_push == 'true' }}
       uses: uspacy/aws-ecr-action@v1
       with:
         repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
@@ -69,14 +69,14 @@ runs:
         echo "name=${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" > $GITHUB_OUTPUT
         
     - name: Build image
-      if: ${{ inputs.run_build }}
+      if: ${{ inputs.run_build == 'true'}}
       id: build-image
       shell: bash
       run: |
         cd ${{ inputs.docker_folder }}
         docker build . -t ${{ steps.full_image_name.outputs.name }}
     - name: Push image
-      if: ${{ inputs.run_push }}
+      if: ${{ inputs.run_push == 'true' }}
       id: push-image
       shell: bash
       run: |
