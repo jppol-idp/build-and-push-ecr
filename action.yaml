@@ -35,6 +35,11 @@ on:
         description: Set to false if you want to run the docker build your self. In this case the image must be tagged correctly as ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/NAMESPACE/IMAGE_NAME:IMAGE_TAG
         type: boolean
         default: true
+      run_push:
+        description: If set to false, nothing is pushed. If you need to tag your image correct given inputs, you can run this action but both run_build and run_push set to false and use the fully_qualified_name output to tag before using action again.
+     output:
+        fully_qualified_name:
+          value: 
 
 runs:
   using: "composite"
@@ -55,21 +60,21 @@ runs:
       id: ecr
       with:
         repository: ${{ inputs.namespace }}/${{ inputs.image_name }}
+    - name: Create full image name
+      id: full_image_name
+      shell: bash
+      run: |
+        echo "name=${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}:${{ inputs:image_tag }}" > $GITHUB_OUTPUT
+        
     - name: Build image
       if: ${{ input.run_build }}
       id: build-image
-      shell: bash
-      env:
-        DOCKER_IMAGE: ${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}
-        IMAGE_TAG: ${{ inputs.image_tag }}
       run: |
         cd ${{ inputs.docker_folder }}
-        docker build . -t $DOCKER_IMAGE:$IMAGE_TAG
+        docker build . -t ${{ steps.full_image_name.outputs.name }}
     - name: Push image
       id: push-image
       shell: bash
       env:
-        DOCKER_IMAGE: ${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}
-        IMAGE_TAG: ${{ inputs.image_tag }}
       run: |
-        docker push  $DOCKER_IMAGE:$IMAGE_TAG
+        docker push ${{ steps.full_image_name.outputs.name }}
