@@ -67,6 +67,7 @@ runs:
     - name: Build image
       if: ${{ inputs.run_build }}
       id: build-image
+      shell: bash
       run: |
         cd ${{ inputs.docker_folder }}
         docker build . -t ${{ steps.full_image_name.outputs.name }}
