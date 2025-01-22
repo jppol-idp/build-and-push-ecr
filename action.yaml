@@ -55,6 +55,7 @@ runs:
       with:
         registries: ${{ inputs.ecr_account_id }}
     - name: Create AWS ECR repository
+      if: ${{ inputs.run_push }}
       uses: uspacy/aws-ecr-action@v1
       with:
         repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
