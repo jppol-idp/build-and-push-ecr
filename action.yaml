@@ -62,15 +62,16 @@ runs:
       id: full_image_name
       shell: bash
       run: |
-        echo "name=${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}:${{ inputs:image_tag }}" > $GITHUB_OUTPUT
+        echo "name=${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" > $GITHUB_OUTPUT
         
     - name: Build image
-      if: ${{ input.run_build }}
+      if: ${{ inputs.run_build }}
       id: build-image
       run: |
         cd ${{ inputs.docker_folder }}
         docker build . -t ${{ steps.full_image_name.outputs.name }}
     - name: Push image
+      if: ${{ inputs.run_push }}
       id: push-image
       shell: bash
       env:
