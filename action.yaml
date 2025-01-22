@@ -1,0 +1,77 @@
+
+name: deploy-ecr
+run-name: Deploy ECR
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        description: The image name. Will be appended to namespace.
+        required: true
+        type: string
+      image_tag:
+        description: A tag value to set
+        required: true
+        type: string
+      docker_folder:
+        description: When building the action will step into this folder and run a docker build command.
+        required: false 
+        default: .
+        type: string
+      namespace:
+        description: The namespace or prefix to use. Final image name will be a composite of this and the image name joined by a slash.
+        required: true
+        type: string
+      ecr_account_id:
+        description: The account id to push to. For internal use at jppol default value should be used.
+        required: false
+        type: string
+        default: '354918371398'
+      aws_region: 
+        description: For internal use at jppol default value should be used.
+        required: false
+        type: string
+        default: eu-west-1
+      run_build:
+        description: Set to false if you want to run the docker build your self. In this case the image must be tagged correctly as ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/NAMESPACE/IMAGE_NAME:IMAGE_TAG
+        type: boolean
+        default: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.ecr_account_id }}:role/github-access-${{ inputs.namespace }}
+        aws-region: ${{ inputs.aws_region }}
+        role-skip-session-tagging: true
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registries: ${{ inputs.ecr_account_id }}
+    - uses: int128/create-ecr-repository-action@v1
+      id: ecr
+      with:
+        repository: ${{ inputs.namespace }}/${{ inputs.image_name }}
+    - name: Build image
+      if: ${{ input.run_build }}
+      id: build-image
+      shell: bash
+      env:
+        DOCKER_IMAGE: ${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}
+        IMAGE_TAG: ${{ inputs.image_tag }}
+      run: |
+        cd ${{ inputs.docker_folder }}
+        docker build . -t $DOCKER_IMAGE:$IMAGE_TAG
+    - name: Push image
+      id: push-image
+      shell: bash
+      env:
+        DOCKER_IMAGE: ${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace  }}/${{ inputs.image_name }}
+        IMAGE_TAG: ${{ inputs.image_tag }}
+      run: |
+        docker push  $DOCKER_IMAGE:$IMAGE_TAG
