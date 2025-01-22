@@ -61,7 +61,7 @@ runs:
       with:
         repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
         scanOnPush: true
-        imageTagMutability: INMUTABLE
+        imageTagMutability: IMMUTABLE
     - name: Create full image name
       id: full_image_name
       shell: bash
