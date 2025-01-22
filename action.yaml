@@ -59,7 +59,7 @@ runs:
       with:
         repositoryName: ${{ inputs.namespace }}/${{ inputs.image_name }}
         scanOnPush: true
-        imageTagMutability: UNMUTABLE
+        imageTagMutability: INMUTABLE
     - uses: int128/create-ecr-repository-action@v1
       id: ecr
       with:
