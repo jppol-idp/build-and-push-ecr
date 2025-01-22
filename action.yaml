@@ -75,6 +75,5 @@ runs:
       if: ${{ inputs.run_push }}
       id: push-image
       shell: bash
-      env:
       run: |
         docker push ${{ steps.full_image_name.outputs.name }}
