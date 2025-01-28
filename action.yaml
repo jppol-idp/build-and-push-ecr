@@ -1,6 +1,7 @@
 
 name: deploy-ecr
 run-name: Deploy ECR
+description: Publishes a docker image to ECR and creating the repository if non-existing.
 inputs:
   image_name:
     description: The image name. Will be appended to namespace.
