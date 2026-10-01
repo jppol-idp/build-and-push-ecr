@@ -83,3 +83,11 @@ runs:
       shell: bash
       run: |
         docker push ${{ steps.full_image_name.outputs.name }}
+
+        # In addition to the user-defined tag, always push a tag identifying the
+        # origin of this image (github-org, github-repo and the workflow run id),
+        # so any pushed image can be traced back to the run that produced it.
+        origin_tag="${GITHUB_REPOSITORY//\//-}-${GITHUB_RUN_ID}"
+        origin_name="${{ inputs.ecr_account_id }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/${{ inputs.namespace }}/${{ inputs.image_name }}:$origin_tag"
+        docker tag ${{ steps.full_image_name.outputs.name }} $origin_name
+        docker push $origin_name
