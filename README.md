@@ -98,3 +98,9 @@ jobs:
 | run\_build | When set to false, no docker build is run. | `true` |
 | run\_push | When true push to ECR is attempted. | `true` |
 
+# Error diagnostics
+The calling job must grant `permissions: id-token: write` (needed to request a GitHub OIDC
+token) - this is checked explicitly as the first step. If any of the AWS credential, ECR
+login/repository, build, or push steps fail, a short diagnosis with likely causes is written
+to the job's Summary tab (`GITHUB_STEP_SUMMARY`) in addition to the normal log output.
+
