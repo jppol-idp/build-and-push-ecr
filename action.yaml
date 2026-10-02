@@ -25,6 +25,10 @@ inputs:
     required: false
     type: string
     default: '354918371398'
+  dockerfile:
+    type: string
+    description: Name of the Dockerfile - if non standard.
+    default: Dockerfile
   aws_region: 
     description: For internal use at jppol default value should be used.
     required: false
@@ -155,7 +159,7 @@ runs:
       shell: bash
       run: |
         cd ${{ inputs.docker_folder }}
-        docker build . -t ${{ steps.full_image_name.outputs.name }}
+        docker build -f "${{ inputs.dockerfile }}" . -t ${{ steps.full_image_name.outputs.name }}
     - name: Build image failure summary
       if: failure() && steps.build-image.outcome == 'failure'
       shell: bash
